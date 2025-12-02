@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometric Pet</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div id="pet-container">
+        <!-- Setup Panel -->
+        <div id="setup">
+            <h2>New Game</h2>
+            <label for="pet-name-input">Pet Name</label>
+            <input id="pet-name-input" type="text" placeholder="e.g., Fluffy">
+
+            <label for="pet-shape-select">Pet Shape</label>
+            <select id="pet-shape-select">
+                <option value="pentagon" selected>Pentagon</option>
+                <option value="square">Square</option>
+                <option value="triangle">Triangle</option>
+            </select>
+
+            <button id="start-btn">Start Game</button>
+        </div>
+
+        <div id="zzz-container"></div>
+        <div id="pet" class="pentagon"></div>
+
+        <div id="stats">
+            <p id="status" class="status"></p>
+            <p><strong>Name:</strong> <span id="pet-name"></span></p>
+            <p><strong>Weight:</strong> <span id="pet-weight"></span></p>
+            <p><strong>Happiness:</strong> <span id="pet-happiness"></span></p>
+            <p><strong>Food:</strong> <span id="pet-food"></span></p>
+            <p><strong>Stamina:</strong> <span id="pet-stamina"></span></p>
+        </div>
+
+        <div id="actions">
+            <button id="treat-btn">Give Treat 🍪</button>
+            <button id="feed-btn">Feed 🍖</button>
+            <button id="exercise-btn">Exercise 🏃‍♂️</button>
+            <button id="play-btn">Play 🎾</button>
+            <button id="new-game-btn" class="secondary">New Game</button>
+        </div>
+    </div>
+</body>
+</html>
