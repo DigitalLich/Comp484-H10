@@ -212,7 +212,7 @@ function applyActionAndMaybeSleep() {
     if (pet_info.stamina <= 0) {
         pet_info.stamina = 0;
         updateStats();
-        startSleep(60000);
+        startSleep(5000);
     }
 }
 
