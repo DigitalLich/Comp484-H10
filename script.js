@@ -13,6 +13,7 @@ let isSleeping = false;
 let sleepIntervalId = null;
 let sleepEndsAt = null;
 let zzzInterval = null;
+let statDecayInterval = null;
 let currentShape = "pentagon"; // "pentagon" | "square" | "triangle"
 
 // ----------------------
@@ -118,7 +119,7 @@ function stopZzzEffect() {
 }
 
 // ----------------------
-// Sleep Logic (1 minute)
+// Sleep Logic (1 minute default)
 // ----------------------
 function startSleep(durationMs = 60000) {
     if (isSleeping) return;
@@ -154,10 +155,34 @@ function wakeUp() {
 }
 
 // ----------------------
+// Time-based Stat Decay
+// ----------------------
+function startStatDecay() {
+    // Clear previous interval (e.g., new game)
+    if (statDecayInterval !== null) {
+        clearInterval(statDecayInterval);
+    }
+
+    // Run every 5 seconds (5000 ms)
+    statDecayInterval = setInterval(function () {
+        // Don’t decay while sleeping
+        if (isSleeping) return;
+
+        // Modify stats over time
+        pet_info.food -= 2;
+        pet_info.stamina -= 1;
+        pet_info.happiness -= 1;
+        
+        applyActionAndMaybeSleep();
+    }, 5000);
+}
+
+// ----------------------
 // Stop Everything (for New Game)
 // ----------------------
 function stopAllBackgroundEffects() {
     isSleeping = false;
+
     if (sleepIntervalId) {
         clearInterval(sleepIntervalId);
         sleepIntervalId = null;
@@ -166,6 +191,11 @@ function stopAllBackgroundEffects() {
         clearInterval(zzzInterval);
         zzzInterval = null;
     }
+    if (statDecayInterval !== null) {
+        clearInterval(statDecayInterval);
+        statDecayInterval = null;
+    }
+
     sleepEndsAt = null;
     $("#pet").removeClass("asleep");
     $("#zzz-container").empty();
@@ -183,6 +213,7 @@ function setShape(shape) {
 // New Game / Reset
 // ----------------------
 function initGame(petName, shape) {
+    // Stop timers and effects from any previous game
     stopAllBackgroundEffects();
 
     // Reset stats
@@ -194,13 +225,16 @@ function initGame(petName, shape) {
         stamina: 100
     };
 
-    // Apply shape
-    setShape(shape || "circle");
+    // Apply shape (default to pentagon to match CSS)
+    setShape(shape || "pentagon");
 
     // Enable UI and refresh
     setButtonsEnabled(true);
     updateStats();
     $("#status").text("");
+
+    // Start stat decay for this new game
+    startStatDecay();
 }
 
 // ----------------------
@@ -212,7 +246,7 @@ function applyActionAndMaybeSleep() {
     if (pet_info.stamina <= 0) {
         pet_info.stamina = 0;
         updateStats();
-        startSleep(5000);
+        startSleep(5000); // short sleep when exhausted
     }
 }
 
@@ -220,6 +254,7 @@ function applyActionAndMaybeSleep() {
 // Actions + Setup
 // ----------------------
 $(document).ready(function() {
+    // Before starting a game, disable actions
     setButtonsEnabled(false);
     updateStats();
 
@@ -247,14 +282,13 @@ $(document).ready(function() {
         pet_info.stamina += 5;
         applyActionAndMaybeSleep();
 
-        // .css(): start a quick "bounce"
-        // .delay() + .queue(): wait 200ms, then run a queued step that scales back down
+        // Quick "bounce"
         $("#pet")
-            .css("transform", "scale(1.1)")     // grow a bit
-            .delay(200)                          // pause 200ms
-            .queue(function(next) {              // queued step after delay
-                $(this).css("transform", "scale(1)"); // return to normal size
-                next();                           // continue the queue
+            .css("transform", "scale(1.1)")
+            .delay(200)
+            .queue(function(next) {
+                $(this).css("transform", "scale(1)");
+                next();
             });
     });
 
@@ -267,14 +301,13 @@ $(document).ready(function() {
         pet_info.stamina += 10;
         applyActionAndMaybeSleep();
 
-        // .css(): scale up a bit more
-        // .delay() + .queue(): revert back after 200ms
+        // Slightly bigger bounce
         $("#pet")
-            .css("transform", "scale(1.15)")    // grow slightly more
-            .delay(200)                          // pause 200ms
-            .queue(function(next) {              // queued step after delay
-                $(this).css("transform", "scale(1)"); // back to normal size
-                next();                           // continue the queue
+            .css("transform", "scale(1.15)")
+            .delay(200)
+            .queue(function(next) {
+                $(this).css("transform", "scale(1)");
+                next();
             });
     });
 
@@ -287,14 +320,13 @@ $(document).ready(function() {
         pet_info.stamina -= 20;
         applyActionAndMaybeSleep();
 
-        // .css(): quick shrink
-        // .delay() + .queue(): revert after 200ms
+        // Quick shrink
         $("#pet")
-            .css("transform", "scale(0.9)")     // shrink a bit
-            .delay(200)                          // pause 200ms
-            .queue(function(next) {              // queued step after delay
-                $(this).css("transform", "scale(1)"); // back to normal size
-                next();                           // continue the queue
+            .css("transform", "scale(0.9)")
+            .delay(200)
+            .queue(function(next) {
+                $(this).css("transform", "scale(1)");
+                next();
             });
     });
 
@@ -307,14 +339,13 @@ $(document).ready(function() {
         pet_info.stamina -= 10;
         applyActionAndMaybeSleep();
 
-        // .css(): rotate a bit
-        // .delay() + .queue(): rotate back after 200ms
+        // Little tilt
         $("#pet")
-            .css("transform", "rotate(20deg)")  // tilt to the side
-            .delay(200)                          // pause 200ms
-            .queue(function(next) {              // queued step after delay
-                $(this).css("transform", "rotate(0deg)"); // straighten back
-                next();                           // continue the queue
+            .css("transform", "rotate(20deg)")
+            .delay(200)
+            .queue(function(next) {
+                $(this).css("transform", "rotate(0deg)");
+                next();
             });
     });
 });
